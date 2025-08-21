@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planificador Semanal - Ivanna</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4a6fa5;
+            --secondary: #6c9bcf;
+            --accent: #ff6b6b;
+            --light: #f8f9fa;
+            --dark: #2c3e50;
+            --success: #4ecdc4;
+            --warning: #ffd166;
+            --danger: #e74c3c;
+            --gray: #95a5a6;
+            --border-radius: 8px;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --family: #ff9aa2;
+            --study: #c5e1a5;
+            --work: #90caf9;
+            --selfcare: #f48fb1;
+            --home: #ffe082;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
+            color: var(--dark);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+        }
+        
+        header {
+            grid-column: 1 / -1;
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        h1 {
+            color: var(--primary);
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        .subtitle {
+            color: var(--gray);
+            font-size: 1rem;
+        }
+        
+        .date-display {
+            background: var(--primary);
+            color: white;
+            padding: 8px 15px;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+        }
+        
+        .sidebar {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            height: fit-content;
+        }
+        
+        .category {
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .category-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .category-color {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+        }
+        
+        .category-family { background-color: var(--family); }
+        .category-study { background-color: var(--study); }
+        .category-work { background-color: var(--work); }
+        .category-selfcare { background-color: var(--selfcare); }
+        .category-home { background-color: var(--home); }
+        
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .controls {
+            background: white;
+            padding: 15px 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .day-selector {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .day-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: var(--border-radius);
+            background-color: var(--light);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .day-btn.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .day-btn:hover:not(.active) {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .action-btns {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary);
+        }
+        
+        .schedule-container {
+            display: grid;
+            grid-template-columns: 80px repeat(7, 1fr);
+            gap: 2px;
+            background: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow-x: auto;
+        }
+        
+        .time-label {
+            background-color: var(--primary);
+            color: white;
+            padding: 8px 5px;
+            text-align: center;
+            border-radius: 4px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 40px;
+        }
+        
+        .time-label.half-hour {
+            background-color: var(--secondary);
+            font-size: 0.8rem;
+        }
+        
+        .day-header {
+            background-color: var(--primary);
+            color: white;
+            padding: 15px 5px;
+            text-align: center;
+            border-radius: 4px;
+            font-weight: 600;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .time-slot {
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            min-height: 40px;
+            padding: 2px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid #eee;
+            position: relative;
+        }
+        
+        .time-slot:hover {
+            background-color: #e6f2ff;
+        }
+        
+        .activity {
+            color: white;
+            border-radius: 4px;
+            padding: 8px;
+            margin-bottom: 2px;
+            font-size: 0.85rem;
+            position: absolute;
+            left: 2px;
+            right: 2px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .activity-time {
+            font-size: 0.75rem;
+            opacity: 0.9;
+            margin-bottom: 3px;
+            font-weight: 500;
+        }
+        
+        .activity-title {
+            font-weight: 500;
+        }
+        
+        .activity-actions {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            display: none;
+        }
+        
+        .activity:hover .activity-actions {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .activity-btn {
+            background: rgba(255, 255, 255, 0.3);
+            border: none;
+            border-radius: 3px;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.7rem;
+            color: white;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--gray);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(74, 111, 165, 0.2);
+        }
+        
+        .category-selectors {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .category-selector {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 8px 12px;
+            border: 1px solid var(--gray);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .category-selector.active {
+            border-color: var(--primary);
+            background-color: rgba(74, 111, 165, 0.1);
+        }
+        
+        .category-preview {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .schedule-container {
+                grid-template-columns: 60px repeat(7, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .day-selector {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .schedule-container {
+                grid-template-columns: 50px repeat(7, 120px);
+                overflow-x: auto;
+            }
+            
+            .day-header {
+                writing-mode: vertical-lr;
+                text-orientation: mixed;
+                padding: 10px 3px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <h1>Planificador Semanal - Ivanna</h1>
+                <p class="subtitle">Organiza tu semana de manera eficiente</p>
+            </div>
+            <div class="date-display" id="currentDate"></div>
+        </header>
+        
+        <aside class="sidebar">
+            <h2><i class="fas fa-info-circle"></i> Categorías</h2>
+            
+            <div class="category">
+                <div class="category-title">
+                    <div class="category-color category-family"></div>
+                    <span>Familia</span>
+                </div>
+                <p>Actividades relacionadas con tus hijas y familia</p>
+            </div>
+            
+            <div class="category">
+                <div class="category-title">
+                    <div class="category-color category-study"></div>
+                    <span>Estudio</span>
+                </div>
+                <p>Preparación PAES y actividades académicas</p>
+            </div>
+            
+            <div class="category">
+                <div class="category-title">
+                    <div class="category-color category-work"></div>
+                    <span>Trabajo</span>
+                </div>
+                <p>Actividades laborales y productivas</p>
+            </div>
+            
+            <div class="category">
+                <div class="category-title">
+                    <div class="category-color category-selfcare"></div>
+                    <span>Autocuidado</span>
+                </div>
+                <p>Actividades de cuidado personal y bienestar</p>
+            </div>
+            
+            <div class="category">
+                <div class="category-title">
+                    <div class="category-color category-home"></div>
+                    <span>Hogar</span>
+                </div>
+                <p>Tareas domésticas y mantenimiento del hogar</p>
+            </div>
+            
+            <h2 style="margin-top: 30px;"><i class="fas fa-plus-circle"></i> Nueva Actividad</h2>
+            <div class="form-group">
+                <label for="quickTitle">Título</label>
+                <input type="text" id="quickTitle" placeholder="Nombre de la actividad">
+            </div>
+            <div class="form-group">
+                <label for="quickDay">Día</label>
+                <select id="quickDay">
+                    <option value="mon">Lunes</option>
+                    <option value="tue">Martes</option>
+                    <option value="wed">Miércoles</option>
+                    <option value="thu">Jueves</option>
+                    <option value="fri">Viernes</option>
+                    <option value="sat">Sábado</option>
+                    <option value="sun">Domingo</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="quickTime">Hora inicio</label>
+                <select id="quickTime">
+                    <!-- Opciones de hora se generarán con JavaScript -->
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="quickDuration">Duración (minutos)</label>
+                <select id="quickDuration">
+                    <option value="30">30 min</option>
+                    <option value="45">45 min</option>
+                    <option value="60">1 hora</option>
+                    <option value="90">1.5 horas</option>
+                    <option value="120">2 horas</option>
+                    <option value="180">3 horas</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Categoría</label>
+                <div class="category-selectors">
+                    <div class="category-selector active" data-category="family">
+                        <div class="category-preview category-family"></div>
+                        <span>Familia</span>
+                    </div>
+                    <div class="category-selector" data-category="study">
+                        <div class="category-preview category-study"></div>
+                        <span>Estudio</span>
+                    </div>
+                    <div class="category-selector" data-category="work">
+                        <div class="category-preview category-work"></div>
+                        <span>Trabajo</span>
+                    </div>
+                    <div class="category-selector" data-category="selfcare">
+                        <div class="category-preview category-selfcare"></div>
+                        <span>Autocuidado</span>
+                    </div>
+                    <div class="category-selector" data-category="home">
+                        <div class="category-preview category-home"></div>
+                        <span>Hogar</span>
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-primary" id="addQuickActivity">
+                <i class="fas fa-plus"></i> Agregar Actividad
+            </button>
+        </aside>
+        
+        <main class="main-content">
+            <div class="controls">
+                <div class="day-selector">
+                    <button class="day-btn active" data-day="all">Todos</button>
+                    <button class="day-btn" data-day="mon">Lun</button>
+                    <button class="day-btn" data-day="tue">Mar</button>
+                    <button class="day-btn" data-day="wed">Mié</button>
+                    <button class="day-btn" data-day="thu">Jue</button>
+                    <button class="day-btn" data-day="fri">Vie</button>
+                    <button class="day-btn" data-day="sat">Sáb</button>
+                    <button class="day-btn" data-day="sun">Dom</button>
+                </div>
+                
+                <div class="action-btns">
+                    <button class="btn btn-primary" id="loadTemplateBtn">
+                        <i class="fas fa-download"></i> Cargar Horario
+                    </button>
+                    <button class="btn btn-primary" id="printBtn">
+                        <i class="fas fa-print"></i> Imprimir
+                    </button>
+                </div>
+            </div>
+            
+            <div class="schedule-container" id="schedule">
+                <!-- Horas -->
+                <div class="time-label">Hora</div>
+                <div class="day-header">Lun</div>
+                <div class="day-header">Mar</div>
+                <div class="day-header">Mié</div>
+                <div class="day-header">Jue</div>
+                <div class="day-header">Vie</div>
+                <div class="day-header">Sáb</div>
+                <div class="day-header">Dom</div>
+                
+                <!-- Filas de horarios -->
+                <!-- Se generarán dinámicamente con JavaScript -->
+            </div>
+        </main>
+    </div>
+    
+    <!-- Modal para agregar/editar actividades -->
+    <div class="modal" id="activityModal">
+        <div class="modal-content">
+            <h2 id="modalTitle">Agregar Actividad</h2>
+            <form id="activityForm">
+                <div class="form-group">
+                    <label for="activityTitle">Título de la actividad</label>
+                    <input type="text" id="activityTitle" required placeholder="Reunión, Tarea, etc.">
+                </div>
+                
+                <div class="form-group">
+                    <label for="activityDay">Día</label>
+                    <select id="activityDay">
+                        <option value="mon">Lunes</option>
+                        <option value="tue">Martes</option>
+                        <option value="wed">Miércoles</option>
+                        <option value="thu">Jueves</option>
+                        <option value="fri">Viernes</option>
+                        <option value="sat">Sábado</option>
+                        <option value="sun">Domingo</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="activityTime">Hora de inicio</label>
+                    <select id="activityTime">
+                        <!-- Opciones de hora se generarán con JavaScript -->
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="activityDuration">Duración (minutos)</label>
+                    <select id="activityDuration">
+                        <option value="30">30 min</option>
+                        <option value="45">45 min</option>
+                        <option value="60">1 hora</option>
+                        <option value="90">1.5 horas</option>
+                        <option value="120">2 horas</option>
+                        <option value="180">3 horas</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Categoría</label>
+                    <div class="category-selectors">
+                        <div class="category-selector active" data-category="family">
+                            <div class="category-preview category-family"></div>
+                            <span>Familia</span>
+                        </div>
+                        <div class="category-selector" data-category="study">
+                            <div class="category-preview category-study"></div>
+                            <span>Estudio</span>
+                        </div>
+                        <div class="category-selector" data-category="work">
+                            <div class="category-preview category-work"></div>
+                            <span>Trabajo</span>
+                        </div>
+                        <div class="category-selector" data-category="selfcare">
+                            <div class="category-preview category-selfcare"></div>
+                            <span>Autocuidado</span>
+                        </div>
+                        <div class="category-selector" data-category="home">
+                            <div class="category-preview category-home"></div>
+                            <span>Hogar</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="activityDescription">Descripción</label>
+                    <textarea id="activityDescription" rows="3" placeholder="Detalles de la actividad..."></textarea>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn btn-danger" id="cancelBtn">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Actividad</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Establecer fecha actual
+            const now = new Date();
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('es-ES', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            
+            // Generar horas del día (de 6:00 a 23:00 en intervalos de 30 min)
+            const scheduleContainer = document.getElementById('schedule');
+            const timeSelect = document.getElementById('activityTime');
+            const quickTimeSelect = document.getElementById('quickTime');
+            let currentActivity = null;
+            
+            for (let hour = 6; hour <= 23; hour++) {
+                for (let minute = 0; minute < 60; minute += 30) {
+                    if (hour === 23 && minute === 30) break; // Parar a las 23:00
+                    
+                    const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+                    const displayTime = `${hour}:${minute === 0 ? '00' : minute}`;
+                    
+                    // Crear label de hora
+                    const timeLabel = document.createElement('div');
+                    timeLabel.className = minute === 0 ? 'time-label' : 'time-label half-hour';
+                    timeLabel.textContent = minute === 0 ? `${hour}:00` : `${minute}`;
+                    scheduleContainer.appendChild(timeLabel);
+                    
+                    // Crear opción para los selects
+                    const option = document.createElement('option');
+                    option.value = `${hour},${minute}`;
+                    option.textContent = displayTime;
+                    timeSelect.appendChild(option.cloneNode(true));
+                    quickTimeSelect.appendChild(option);
+                    
+                    // Crear slots para cada día
+                    const days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+                    days.forEach(day => {
+                        const slot = document.createElement('div');
+                        slot.className = 'time-slot';
+                        slot.dataset.hour = hour;
+                        slot.dataset.minute = minute;
+                        slot.dataset.day = day;
+                        slot.addEventListener('click', () => openModal(hour, minute, day));
+                        scheduleContainer.appendChild(slot);
+                    });
+                }
+            }
+            
+            // Configurar selectores de categoría
+            document.querySelectorAll('.category-selector').forEach(selector => {
+                selector.addEventListener('click', function() {
+                    document.querySelectorAll('.category-selector').forEach(s => s.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+            
+            // Configurar botones de día
+            document.querySelectorAll('.day-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const day = this.dataset.day;
+                    filterByDay(day);
+                });
+            });
+            
+            // Configurar modal
+            const modal = document.getElementById('activityModal');
+            const cancelBtn = document.getElementById('cancelBtn');
+            const form = document.getElementById('activityForm');
+            
+            cancelBtn.addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
+            
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveActivity();
+                modal.style.display = 'none';
+            });
+            
+            // Cerrar modal al hacer clic fuera
+            window.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+            
+            // Configurar botón de agregado rápido
+            document.getElementById('addQuickActivity').addEventListener('click', addQuickActivity);
+            
+            // Configurar botón para cargar el horario predefinido
+            document.getElementById('loadTemplateBtn').addEventListener('click', loadTemplateSchedule);
+            
+            // Cargar actividades guardadas
+            loadActivities();
+        });
+        
+        function openModal(hour, minute, day) {
+            const modal = document.getElementById('activityModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const activityDay = document.getElementById('activityDay');
+            const activityTime = document.getElementById('activityTime');
+            
+            modalTitle.textContent = 'Agregar Actividad';
+            activityDay.value = day;
+            activityTime.value = `${hour},${minute}`;
+            
+            // Buscar si ya existe una actividad en este slot
+            const activities = getActivities();
+            const existingActivity = activities.find(a => a.hour == hour && a.minute == minute && a.day == day);
+            
+            if (existingActivity) {
+                modalTitle.textContent = 'Editar Actividad';
+                document.getElementById('activityTitle').value = existingActivity.title;
+                document.getElementById('activityDuration').value = existingActivity.duration;
+                document.getElementById('activityDescription').value = existingActivity.description || '';
+                
+                // Establecer categoría
+                document.querySelectorAll('.category-selector').forEach(selector => {
+                    selector.classList.remove('active');
+                    if (selector.dataset.category === existingActivity.category) {
+                        selector.classList.add('active');
+                    }
+                });
+                
+                currentActivity = existingActivity;
+            } else {
+                document.getElementById('activityForm').reset();
+                // Establecer categoría familia por defecto
+                document.querySelector('[data-category="family"]').classList.add('active');
+                currentActivity = null;
+            }
+            
+            modal.style.display = 'flex';
+        }
+        
+        function addQuickActivity() {
+            const title = document.getElementById('quickTitle').value;
+            const day = document.getElementById('quickDay').value;
+            const time = document.getElementById('quickTime').value.split(',');
+            const hour = parseInt(time[0]);
+            const minute = parseInt(time[1]);
+            const duration = document.getElementById('quickDuration').value;
+            
+            // Obtener categoría seleccionada
+            let category = 'family';
+            document.querySelectorAll('.category-selector').forEach(selector => {
+                if (selector.classList.contains('active')) {
+                    category = selector.dataset.category;
+                }
+            });
+            
+            if (!title) {
+                alert('Por favor, ingresa un título para la actividad');
+                return;
+            }
+            
+            const activity = {
+                title,
+                day,
+                hour,
+                minute,
+                duration: parseInt(duration),
+                category,
+                description: ''
+            };
+            
+            let activities = getActivities();
+            activities.push(activity);
+            localStorage.setItem('weeklyActivities', JSON.stringify(activities));
+            
+            // Limpiar el formulario rápido
+            document.getElementById('quickTitle').value = '';
+            
+            renderActivities();
+        }
+        
+        function saveActivity() {
+            const title = document.getElementById('activityTitle').value;
+            const day = document.getElementById('activityDay').value;
+            const time = document.getElementById('activityTime').value.split(',');
+            const hour = parseInt(time[0]);
+            const minute = parseInt(time[1]);
+            const duration = document.getElementById('activityDuration').value;
+            const description = document.getElementById('activityDescription').value;
+            
+            // Obtener categoría seleccionada
+            let category = 'family';
+            document.querySelectorAll('.category-selector').forEach(selector => {
+                if (selector.classList.contains('active')) {
+                    category = selector.dataset.category;
+                }
+            });
+            
+            const activity = {
+                title,
+                day,
+                hour,
+                minute,
+                duration: parseInt(duration),
+                category,
+                description
+            };
+            
+            let activities = getActivities();
+            
+            // Si estamos editando, eliminar la actividad anterior
+            if (currentActivity) {
+                activities = activities.filter(a => 
+                    !(a.hour === currentActivity.hour && 
+                      a.minute === currentActivity.minute && 
+                      a.day === currentActivity.day)
+                );
+            }
+            
+            activities.push(activity);
+            localStorage.setItem('weeklyActivities', JSON.stringify(activities));
+            
+            renderActivities();
+        }
+        
+        function getActivities() {
+            return JSON.parse(localStorage.getItem('weeklyActivities') || '[]');
+        }
+        
+        function loadActivities() {
+            renderActivities();
+        }
+        
+        function renderActivities() {
+            // Limpiar todos los slots primero
+            document.querySelectorAll('.time-slot').forEach(slot => {
+                slot.innerHTML = '';
+            });
+            
+            const activities = getActivities();
+            
+            activities.forEach(activity => {
+                const startSlot = document.querySelector(`.time-slot[data-hour="${activity.hour}"][data-minute="${activity.minute}"][data-day="${activity.day}"]`);
+                
+                if (startSlot) {
+                    const activityEl = document.createElement('div');
+                    activityEl.className = `activity category-${activity.category}`;
+                    
+                    const startTime = `${activity.hour}:${activity.minute === 0 ? '00' : activity.minute}`;
+                    const durationHours = activity.duration / 60; // convertir a horas
+                    
+                    activityEl.innerHTML = `
+                        <div class="activity-time">${startTime}</div>
+                        <div class="activity-title">${activity.title}</div>
+                        <div class="activity-actions">
+                            <button class="activity-btn" onclick="editActivity(event, '${activity.day}', ${activity.hour}, ${activity.minute})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="activity-btn" onclick="deleteActivity(event, '${activity.day}', ${activity.hour}, ${activity.minute})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+                    
+                    // Ajustar altura según duración (cada 30 min = 40px)
+                    const durationSlots = Math.ceil(activity.duration / 30);
+                    activityEl.style.height = `${durationSlots * 40 - 4}px`;
+                    activityEl.style.zIndex = '10';
+                    
+                    startSlot.appendChild(activityEl);
+                }
+            });
+        }
+        
+        function editActivity(event, day, hour, minute) {
+            event.stopPropagation();
+            openModal(hour, minute, day);
+        }
+        
+        function deleteActivity(event, day, hour, minute) {
+            event.stopPropagation();
+            if (confirm('¿Estás seguro de que quieres eliminar esta actividad?')) {
+                let activities = getActivities();
+                activities = activities.filter(a => 
+                    !(a.hour === hour && a.minute === minute && a.day === day)
+                );
+                localStorage.setItem('weeklyActivities', JSON.stringify(activities));
+                renderActivities();
+            }
+        }
+        
+        function filterByDay(day) {
+            if (day === 'all') {
+                document.querySelectorAll('.time-slot').forEach(slot => {
+                    slot.style.display = 'block';
+                });
+                document.querySelectorAll('.day-header').forEach(header => {
+                    header.style.display = 'flex';
+                });
+            } else {
+                // Ocultar todos los slots primero
+                document.querySelectorAll('.time-slot').forEach(slot => {
+                    slot.style.display = 'none';
+                });
+                
+                // Mostrar solo los slots del día seleccionado
+                document.querySelectorAll(`.time-slot[data-day="${day}"]`).forEach(slot => {
+                    slot.style.display = 'block';
+                });
+                
+                // Ocultar/mostrar encabezados de días
+                document.querySelectorAll('.day-header').forEach((header, index) => {
+                    const days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+                    if (days[index] === day) {
+                        header.style.display = 'flex';
+                    } else {
+                        header.style.display = 'none';
+                    }
+                });
+            }
+        }
+        
+        function loadTemplateSchedule() {
+            if (confirm('¿Estás seguro de que quieres cargar el horario predefinido? Se borrarán las actividades actuales.')) {
+                const templateActivities = [
+                    // Lunes
+                    { title: "Levantarme, preparar desayuno, niñas listas", day: "mon", hour: 6, minute: 30, duration: 45, category: "family" },
+                    { title: "Tomar medicamento", day: "mon", hour: 7, minute: 0, duration: 5, category: "selfcare" },
+                    { title: "Llevar a las niñas al colegio", day: "mon", hour: 7, minute: 15, duration: 15, category: "family" },
+                    { title: "Orden básico de la casa", day: "mon", hour: 7, minute: 30, duration: 30, category: "home" },
+                    { title: "Estudio PAES", day: "mon", hour: 9, minute: 0, duration: 60, category: "study" },
+                    { title: "Trabajo / Taxi / Ventas", day: "mon", hour: 10, minute: 0, duration: 60, category: "work" },
+                    { title: "Lavar ropa blanca", day: "mon", hour: 11, minute: 0, duration: 60, category: "home" },
+                    { title: "Autocuidado: hidratación + exfoliación", day: "mon", hour: 12, minute: 0, duration: 30, category: "selfcare" },
+                    { title: "Almuerzo", day: "mon", hour: 13, minute: 0, duration: 60, category: "family" },
+                    { title: "Orden de cocina", day: "mon", hour: 14, minute: 0, duration: 60, category: "home" },
+                    { title: "Buscar a las niñas", day: "mon", hour: 15, minute: 30, duration: 30, category: "family" },
+                    { title: "Repaso escolar con hijas", day: "mon", hour: 16, minute: 0, duration: 60, category: "family" },
+                    { title: "Orden hogar con hijas", day: "mon", hour: 17, minute: 0, duration: 60, category: "home" },
+                    { title: "Teatro", day: "mon", hour: 18, minute: 30, duration: 150, category: "work" },
+                    { title: "Cena ligera", day: "mon", hour: 21, minute: 30, duration: 30, category: "family" },
+                    { title: "Autocuidado: ducha, skincare, meditación", day: "mon", hour: 22, minute: 0, duration: 60, category: "selfcare" },
+                    
+                    // Martes (similar pattern for other days)
+                    { title: "Levantarme, preparar desayuno, niñas listas", day: "tue", hour: 6, minute: 30, duration: 45, category: "family" },
+                    { title: "Tomar medicamento", day: "tue", hour: 7, minute: 0, duration: 5, category: "selfcare" },
+                    { title: "Llevar a las niñas al colegio", day: "tue", hour: 7, minute: 15, duration: 15, category: "family" },
+                    { title: "Orden básico de la casa", day: "tue", hour: 7, minute: 30, duration: 30, category: "home" },
+                    { title: "Estudio PAES", day: "tue", hour: 9, minute: 0, duration: 60, category: "study" },
+                    { title: "Limpieza profunda baño", day: "tue", hour: 10, minute: 0, duration: 60, category: "home" },
+                    { title: "Cocinar comida extra y congelar", day: "tue", hour: 11, minute: 0, duration: 60, category: "home" },
+                    { title: "Autocuidado: corte de uñas y pies", day: "tue", hour: 12, minute: 0, duration: 30, category: "selfcare" },
+                    { title: "Almuerzo", day: "tue", hour: 13, minute: 0, duration: 60, category: "family" },
+                    { title: "Jardinería", day: "tue", hour: 14, minute: 0, duration: 60, category: "home" },
+                    { title: "Buscar a las niñas", day: "tue", hour: 15, minute: 30, duration: 30, category: "family" },
+                    { title: "Tiempo con hijas", day: "tue", hour: 16, minute: 0, duration: 60, category: "family" },
+                    { title: "Orden hogar con hijas", day: "tue", hour: 17, minute: 0, duration: 60, category: "home" },
+                    { title: "Trabajo libre o descanso", day: "tue", hour: 18, minute: 30, duration: 150, category: "work" },
+                    { title: "Cena ligera", day: "tue", hour: 21, minute: 30, duration: 30, category: "family" },
+                    { title: "Autocuidado: meditación + ducha relajante", day: "tue", hour: 22, minute: 0, duration: 60, category: "selfcare" },
+                    
+                    // Miércoles
+                    { title: "Levantarme, preparar desayuno, niñas listas", day: "wed", hour: 6, minute: 30, duration: 45, category: "family" },
+                    { title: "Tomar medicamento", day: "wed", hour: 7, minute: 0, duration: 5, category: "selfcare" },
+                    { title: "Llevar a las niñas al colegio", day: "wed", hour: 7, minute: 15, duration: 15, category: "family" },
+                    { title: "Orden básico de la casa", day: "wed", hour: 7, minute: 30, duration: 30, category: "home" },
+                    { title: "Estudio PAES", day: "wed", hour: 9, minute: 0, duration: 60, category: "study" },
+                    { title: "Aspirado y limpieza de pisos", day: "wed", hour: 10, minute: 0, duration: 60, category: "home" },
+                    { title: "Lavar ropa de cama", day: "wed", hour: 11, minute: 0, duration: 60, category: "home" },
+                    { title: "Autocuidado: mascarilla facial y pelo", day: "wed", hour: 12, minute: 0, duration: 30, category: "selfcare" },
+                    { title: "Almuerzo", day: "wed", hour: 13, minute: 0, duration: 60, category: "family" },
+                    { title: "Trabajo o estudio", day: "wed", hour: 14, minute: 0, duration: 60, category: "work" },
+                    { title: "Buscar a las niñas", day: "wed", hour: 15, minute: 30, duration: 30, category: "family" },
+                    { title: "Revisión tareas hijas", day: "wed", hour: 16, minute: 0, duration: 60, category: "family" },
+                    { title: "Orden hogar con hijas", day: "wed", hour: 17, minute: 0, duration: 60, category: "home" },
+                    { title: "Teatro", day: "wed", hour: 18, minute: 30, duration: 150, category: "work" },
+                    { title: "Cena ligera", day: "wed", hour: 21, minute: 30, duration: 30, category: "family" },
+                    { title: "Autocuidado: escritura + relajación", day: "wed", hour: 22, minute: 0, duration: 60, category: "selfcare" }
+                ];
+                
+                localStorage.setItem('weeklyActivities', JSON.stringify(templateActivities));
+                renderActivities();
+                alert('Horario predefinido cargado. Puedes editarlo según tus necesidades.');
+            }
+        }
+    </script>
+</body>
+</html>
