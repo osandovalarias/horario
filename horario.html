@@ -7,22 +7,22 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #4a6fa5;
-            --secondary: #6c9bcf;
+            --primary: #9c27b0; /* Morado */
+            --secondary: #e91e63; /* Rosado */
             --accent: #ff6b6b;
             --light: #f8f9fa;
             --dark: #2c3e50;
-            --success: #4ecdc4;
-            --warning: #ffd166;
+            --success: #26a69a; /* Calipso */
+            --warning: #ffb300; /* Dorado */
             --danger: #e74c3c;
             --gray: #95a5a6;
             --border-radius: 8px;
             --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            --family: #ff9aa2;
-            --study: #c5e1a5;
-            --work: #90caf9;
-            --selfcare: #f48fb1;
-            --home: #ffe082;
+            --family: #e91e63; /* Rosado */
+            --study: #9c27b0; /* Morado */
+            --work: #ffb300; /* Dorado */
+            --selfcare: #26a69a; /* Calipso */
+            --home: #ab47bc; /* Morado claro */
         }
         
         * {
@@ -235,7 +235,7 @@
         }
         
         .time-slot:hover {
-            background-color: #e6f2ff;
+            background-color: #f5e6ff;
         }
         
         .activity {
@@ -332,7 +332,7 @@
         input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 2px rgba(74, 111, 165, 0.2);
+            box-shadow: 0 0 0 2px rgba(156, 39, 176, 0.2);
         }
         
         .category-selectors {
@@ -355,7 +355,7 @@
         
         .category-selector.active {
             border-color: var(--primary);
-            background-color: rgba(74, 111, 165, 0.1);
+            background-color: rgba(156, 39, 176, 0.1);
         }
         
         .category-preview {
@@ -372,6 +372,28 @@
         
         .btn-danger {
             background-color: var(--danger);
+            color: white;
+        }
+        
+        .filter-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            background-color: var(--light);
+        }
+        
+        .filter-btn.active {
+            background-color: var(--primary);
             color: white;
         }
         
@@ -407,6 +429,28 @@
                 padding: 10px 3px;
             }
         }
+        
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .main-content, .main-content * {
+                visibility: visible;
+            }
+            .main-content {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+            .controls {
+                display: none;
+            }
+            .schedule-container {
+                box-shadow: none;
+                overflow: visible;
+            }
+        }
     </style>
 </head>
 <body>
@@ -420,49 +464,7 @@
         </header>
         
         <aside class="sidebar">
-            <h2><i class="fas fa-info-circle"></i> Categorías</h2>
-            
-            <div class="category">
-                <div class="category-title">
-                    <div class="category-color category-family"></div>
-                    <span>Familia</span>
-                </div>
-                <p>Actividades relacionadas con tus hijas y familia</p>
-            </div>
-            
-            <div class="category">
-                <div class="category-title">
-                    <div class="category-color category-study"></div>
-                    <span>Estudio</span>
-                </div>
-                <p>Preparación PAES y actividades académicas</p>
-            </div>
-            
-            <div class="category">
-                <div class="category-title">
-                    <div class="category-color category-work"></div>
-                    <span>Trabajo</span>
-                </div>
-                <p>Actividades laborales y productivas</p>
-            </div>
-            
-            <div class="category">
-                <div class="category-title">
-                    <div class="category-color category-selfcare"></div>
-                    <span>Autocuidado</span>
-                </div>
-                <p>Actividades de cuidado personal y bienestar</p>
-            </div>
-            
-            <div class="category">
-                <div class="category-title">
-                    <div class="category-color category-home"></div>
-                    <span>Hogar</span>
-                </div>
-                <p>Tareas domésticas y mantenimiento del hogar</p>
-            </div>
-            
-            <h2 style="margin-top: 30px;"><i class="fas fa-plus-circle"></i> Nueva Actividad</h2>
+            <h2><i class="fas fa-plus-circle"></i> Nueva Actividad</h2>
             <div class="form-group">
                 <label for="quickTitle">Título</label>
                 <input type="text" id="quickTitle" placeholder="Nombre de la actividad">
@@ -524,6 +526,58 @@
             <button class="btn btn-primary" id="addQuickActivity">
                 <i class="fas fa-plus"></i> Agregar Actividad
             </button>
+            
+            <h2 style="margin-top: 30px;"><i class="fas fa-filter"></i> Filtrar por Categoría</h2>
+            <div class="filter-controls">
+                <button class="filter-btn active" data-category="all">Todas</button>
+                <button class="filter-btn" data-category="family">Familia</button>
+                <button class="filter-btn" data-category="study">Estudio</button>
+                <button class="filter-btn" data-category="work">Trabajo</button>
+                <button class="filter-btn" data-category="selfcare">Autocuidado</button>
+                <button class="filter-btn" data-category="home">Hogar</button>
+            </div>
+            
+            <h2 style="margin-top: 30px;"><i class="fas fa-info-circle"></i> Categorías</h2>
+            
+            <div class="category">
+                <div class="category-title">
+                    <div class="category-color category-family"></div>
+                    <span>Familia</span>
+                </div>
+                <p>Actividades relacionadas con tus hijas y familia</p>
+            </div>
+            
+            <div class="category">
+                <div class="category-title">
+                    <div class="category-color category-study"></div>
+                    <span>Estudio</span>
+                </div>
+                <p>Preparación PAES y actividades académicas</p>
+            </div>
+            
+            <div class="category">
+                <div class="category-title">
+                    <div class="category-color category-work"></div>
+                    <span>Trabajo</span>
+                </div>
+                <p>Actividades laborales y productivas</p>
+            </div>
+            
+            <div class="category">
+                <div class="category-title">
+                    <div class="category-color category-selfcare"></div>
+                    <span>Autocuidado</span>
+                </div>
+                <p>Actividades de cuidado personal y bienestar</p>
+            </div>
+            
+            <div class="category">
+                <div class="category-title">
+                    <div class="category-color category-home"></div>
+                    <span>Hogar</span>
+                </div>
+                <p>Tareas domésticas y mantenimiento del hogar</p>
+            </div>
         </aside>
         
         <main class="main-content">
@@ -669,12 +723,12 @@
                     if (hour === 23 && minute === 30) break; // Parar a las 23:00
                     
                     const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
-                    const displayTime = `${hour}:${minute === 0 ? '00' : minute}`;
+                    const displayTime = `${hour.toString().padStart(2, '0')}:${minute === 0 ? '00' : minute}`;
                     
                     // Crear label de hora
                     const timeLabel = document.createElement('div');
                     timeLabel.className = minute === 0 ? 'time-label' : 'time-label half-hour';
-                    timeLabel.textContent = minute === 0 ? `${hour}:00` : `${minute}`;
+                    timeLabel.textContent = minute === 0 ? `${hour}:00` : `${displayTime}`;
                     scheduleContainer.appendChild(timeLabel);
                     
                     // Crear opción para los selects
@@ -717,6 +771,17 @@
                 });
             });
             
+            // Configurar botones de filtro por categoría
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const category = this.dataset.category;
+                    filterByCategory(category);
+                });
+            });
+            
             // Configurar modal
             const modal = document.getElementById('activityModal');
             const cancelBtn = document.getElementById('cancelBtn');
@@ -744,6 +809,11 @@
             
             // Configurar botón para cargar el horario predefinido
             document.getElementById('loadTemplateBtn').addEventListener('click', loadTemplateSchedule);
+            
+            // Configurar botón de impresión
+            document.getElementById('printBtn').addEventListener('click', function() {
+                window.print();
+            });
             
             // Cargar actividades guardadas
             loadActivities();
@@ -896,7 +966,7 @@
                     const activityEl = document.createElement('div');
                     activityEl.className = `activity category-${activity.category}`;
                     
-                    const startTime = `${activity.hour}:${activity.minute === 0 ? '00' : activity.minute}`;
+                    const startTime = `${activity.hour.toString().padStart(2, '0')}:${activity.minute === 0 ? '00' : activity.minute}`;
                     const durationHours = activity.duration / 60; // convertir a horas
                     
                     activityEl.innerHTML = `
@@ -966,6 +1036,38 @@
                     } else {
                         header.style.display = 'none';
                     }
+                });
+            }
+        }
+        
+        function filterByCategory(category) {
+            if (category === 'all') {
+                document.querySelectorAll('.time-slot').forEach(slot => {
+                    slot.style.display = 'block';
+                });
+                document.querySelectorAll('.day-header').forEach(header => {
+                    header.style.display = 'flex';
+                });
+            } else {
+                // Ocultar todos los slots primero
+                document.querySelectorAll('.time-slot').forEach(slot => {
+                    slot.style.display = 'none';
+                });
+                
+                // Mostrar solo los slots que tienen actividades de la categoría seleccionada
+                const activities = getActivities();
+                activities.forEach(activity => {
+                    if (activity.category === category) {
+                        const slot = document.querySelector(`.time-slot[data-hour="${activity.hour}"][data-minute="${activity.minute}"][data-day="${activity.day}"]`);
+                        if (slot) {
+                            slot.style.display = 'block';
+                        }
+                    }
+                });
+                
+                // Mostrar todos los encabezados de días
+                document.querySelectorAll('.day-header').forEach(header => {
+                    header.style.display = 'flex';
                 });
             }
         }
